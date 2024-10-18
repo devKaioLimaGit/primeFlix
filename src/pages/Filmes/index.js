@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../service/api";
+import {toast} from 'react-toastify'
 import './filmeInfo.css'
 
 function Filmes() {
@@ -24,18 +25,34 @@ function Filmes() {
           setLoadFilme(false);
         })
         .catch(() => {
-          console.log("FILME NÃO ENCONTRADO");
+          toast.warn("Filme não encontrado!");
           navegate("/", {replace: true})
           return;
         });
     }
 
     loadFilme();
-
-    return () => {
-      console.log("Componete foi desmontado");
-    };
   }, [navegate, id]);
+
+  function salvaFilme() {
+  
+    const minhaLista = localStorage.getItem("@primeFlix");
+    let filmesSalvos = JSON.parse(minhaLista) || [];
+  
+    const hasFilme = filmesSalvos.some((filmeSalvo) => filmeSalvo.id === filme.id);
+
+  
+    if (hasFilme) {
+      toast.warn("Esse filme já existe na lista!");
+      return;
+    }
+  
+    filmesSalvos.push(filme);
+    localStorage.setItem("@primeFlix", JSON.stringify(filmesSalvos));
+  
+    toast.success("Filme salvo com sucesso!");
+  }
+  
 
   if (loadFilme) {
     return (
@@ -59,7 +76,7 @@ function Filmes() {
 
 
       <div className="area-buttons">
-      <button>Salvar</button>
+      <button onClick={() => { salvaFilme(); }}>Salvar</button>
         <button><a target="black" rel="external" href={`https://youtube.com/results?search_query=${filme.title} Trailer`}>Trailer</a></button>
       </div>
     </div>
