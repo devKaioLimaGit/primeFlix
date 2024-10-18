@@ -5,6 +5,7 @@ import "./home.css";
 
 function Home() {
   const [filmes, setFilmes] = useState([]);
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     async function loadFilmes() {
       const response = await api.get("movie/now_playing", {
@@ -16,10 +17,20 @@ function Home() {
       });
 
       setFilmes(response.data.results.slice(0, 11));
+      setLoading(false);
     }
 
     loadFilmes();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="loading">
+        <h2>Carregnado filmes...</h2>
+      </div>
+    );
+  }
+
   return (
     <div className="container">
       <div className="lista-filmes">
